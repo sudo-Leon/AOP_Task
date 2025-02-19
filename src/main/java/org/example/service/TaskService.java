@@ -1,41 +1,45 @@
 package org.example.service;
 
 import org.example.model.Task;
+import org.example.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskService {
-    private final Map<Long, Task> tasks = new HashMap<>(); // Хранилище задач
-    private final AtomicLong idGenerator = new AtomicLong(1); // Генератор уникальных ID
+    private final TaskRepository taskRepository;
+
+    public TaskService(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
 
     public Task createTask(Task task) {
-        long id = idGenerator.getAndIncrement();
-        task.setId(id);
-        tasks.put(id, task);
-        return task;
+        return taskRepository.save(task);
     }
 
     public Optional<Task> getTaskById(Long id) {
-        return Optional.ofNullable(tasks.get(id));
+        return taskRepository.findById(id);
     }
 
-    public List<Task> getAllTasks() {return new ArrayList<>(tasks.values());
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
     }
 
-    //Обновление задачи
     public Optional<Task> updateTask(Long id, Task updatedTask) {
-        if (tasks.containsKey(id)) {
+        if (taskRepository.existsById(id)) {
             updatedTask.setId(id);
-            tasks.put(id, updatedTask);
-            return Optional.of(updatedTask);
+            return Optional.of(taskRepository.save(updatedTask));
         }
         return Optional.empty();
     }
 
     public boolean deleteTask(Long id) {
-        return tasks.remove(id) != null;
+        if (taskRepository.existsById(id)) {
+            taskRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

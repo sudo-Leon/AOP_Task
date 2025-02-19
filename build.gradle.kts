@@ -30,6 +30,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("ch.qos.logback:logback-classic")
 
+    implementation("org.postgresql:postgresql:42.5.1")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

@@ -1,12 +1,11 @@
 package org.example.controller;
 
+import org.example.exception.NotFoundException;
 import org.example.model.Task;
 import org.example.service.TaskService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/tasks")
@@ -18,33 +17,31 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        return ResponseEntity.ok(taskService.createTask(task));
+    public Task createTask(@RequestBody Task task) {
+        return taskService.createTask(task);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
-        Optional<Task> task = taskService.getTaskById(id);
-        return task.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public Task getTaskById(@PathVariable Long id) {
+        return taskService.getTaskById(id)
+                .orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks() {
-        return ResponseEntity.ok(taskService.getAllTasks());
+    public List<Task> getAllTasks() {
+        return taskService.getAllTasks();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
-        Optional<Task> updatedTask = taskService.updateTask(id, task);
-        return updatedTask.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public Task updateTask(@PathVariable Long id, @RequestBody Task task) {
+        return taskService.updateTask(id, task)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        if (taskService.deleteTask(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+    public void deleteTask(@PathVariable Long id) {
+        if (!taskService.deleteTask(id)) {
+            throw new RuntimeException("Task not found");
         }
     }
 }
