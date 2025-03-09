@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.logging.annotation.LogHttp;
 import org.example.exception.NotFoundException;
 import org.example.model.Task;
 import org.example.service.TaskService;
@@ -17,31 +18,15 @@ public class TaskController {
     }
 
     @PostMapping
+    @LogHttp  // Теперь логирование включается только для этого метода
     public Task createTask(@RequestBody Task task) {
         return taskService.createTask(task);
     }
 
     @GetMapping("/{id}")
+    @LogHttp  // Логируем только получение задачи по ID
     public Task getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id)
                 .orElseThrow(() -> new NotFoundException("Task not found with id: " + id));
-    }
-
-    @GetMapping
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
-    }
-
-    @PutMapping("/{id}")
-    public Task updateTask(@PathVariable Long id, @RequestBody Task task) {
-        return taskService.updateTask(id, task)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
-        if (!taskService.deleteTask(id)) {
-            throw new RuntimeException("Task not found");
-        }
     }
 }
