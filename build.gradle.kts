@@ -34,6 +34,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
 
+    implementation(project(":http-logging-starter"))
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
